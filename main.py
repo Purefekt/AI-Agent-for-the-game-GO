@@ -105,7 +105,15 @@ if __name__ == '__main__':
                 raise Exception
         except Exception as e:
             print('Please enter either 1 or 2!!!')
-    chosen_difficulty = 5
+    while True:
+        try:
+            chosen_difficulty = int(input('Please choose a difficulty level between 1-24: '))
+            if chosen_difficulty in (1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24):
+                break
+            else:
+                raise Exception
+        except Exception as e:
+            print('Please enter a valid number between 1-24')
     new_GO_game = GO(players_color=chosen_color, difficulty=chosen_difficulty)
 
     if new_GO_game.players_color == 1:
