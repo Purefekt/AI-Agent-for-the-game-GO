@@ -125,20 +125,15 @@ def get_valid_moves(players_color, agents_color, previous_game_board, current_ga
     - Anything else is a valid move. Sort the valid moves with the highest partial utility.
     """
 
-    # possible_moves = set()
-    # for i in range(5):
-    #     for j in range(5):
-    #         if current_game_board[i][j] != 0:
-    #             liberties_of_curr_position = get_liberties(x=i,
-    #                                                        y=j,
-    #                                                        current_game_board=current_game_board,
-    #                                                        stone_color=agents_color)
-    #             possible_moves = possible_moves.union(liberties_of_curr_position)
-    possible_moves = []
+    possible_moves = set()
     for i in range(5):
         for j in range(5):
-            if current_game_board[i][j] == 0:
-                possible_moves.append((i,j))
+            if current_game_board[i][j] != 0:
+                liberties_of_curr_position = get_liberties(x=i,
+                                                           y=j,
+                                                           current_game_board=current_game_board,
+                                                           stone_color=agents_color)
+                possible_moves = possible_moves.union(liberties_of_curr_position)
 
     valid_moves_with_partial_utility = []
     for move in possible_moves:

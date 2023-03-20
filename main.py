@@ -38,7 +38,6 @@ class GO:
         self.total_moves += 1
 
     def player_move(self):
-        print('It is your turn')
 
         x = input('Please enter the row from the options - 0,1,2,3,4: ')
         y = input('Please enter the column from the options - 0,1,2,3,4: ')
@@ -49,12 +48,43 @@ class GO:
         else:
             x = int(x)
             y = int(y)
-            self.current_game_board[x][y] = self.players_color
+
             # check if this is a valid move
+            # cannot make a move is this position is not 0
+            if self.current_game_board[x][y] != 0:
+                print('A stone already exists at this position!!! Try again')
+                return False
+
+            # play the move by the player and check if it is valid
+            tmp_board = copy.deepcopy(self.current_game_board)
+            tmp_board[x][y] = self.players_color
+
+            # first find and remove opponent's dead stones. In this case opponent for the player is the agent
+            for dead_stone in find_dead_stones(board=tmp_board, stone_color=self.agents_color):
+                tmp_board[dead_stone[0]][dead_stone[1]] = 0
+            # Next remove the player's own dead stones.
+            for dead_stone in find_dead_stones(board=tmp_board, stone_color=self.players_color):
+                tmp_board[dead_stone[0]][dead_stone[1]] = 0
+
+            # check for suicide
+            if tmp_board == self.current_game_board:
+                print('This is a Suicide move!!! Try again')
+                return False
+
+            # check for ko
+            if tmp_board == self.previous_game_board:
+                print('This will violate the ko rule!!! Try again')
+                return False
+
+            # if everything passes, then this is a valid move
+            self.current_game_board[x][y] = self.players_color
+
+            # capture stones after a valid move
+            for dead_stone in find_dead_stones(board=self.current_game_board, stone_color=self.agents_color):
+                self.current_game_board[dead_stone[0]][dead_stone[1]] = 0
 
             self.total_moves += 1
             return True
-
 
     def calculate_winner(self):
         pass
@@ -68,14 +98,14 @@ if __name__ == '__main__':
     # Ask the user to select a stone color and difficulty. Then initialize the game.
     while True:
         try:
-            chosen_color = int(input('Please enter a stone color. Enter 1 for black and 2 for white: '))
+            chosen_color = int(input('Please choose a stone color. Enter 1 for black and 2 for white: '))
             if chosen_color == 1 or chosen_color == 2:
                 break
             else:
                 raise Exception
         except Exception as e:
             print('Please enter either 1 or 2!!!')
-    chosen_difficulty = 1
+    chosen_difficulty = 5
     new_GO_game = GO(players_color=chosen_color, difficulty=chosen_difficulty)
 
     if new_GO_game.players_color == 1:
